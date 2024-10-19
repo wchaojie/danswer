@@ -55,6 +55,8 @@ import { LlmOverride } from "@/lib/hooks";
 import { ContinueGenerating } from "./ContinueMessage";
 import { MemoizedLink, MemoizedParagraph } from "./MemoizedTextComponents";
 import { extractCodeText } from "./codeUtils";
+import CodeBlockButton from "./CodeBlockButton";
+import PositionedQuote from "./PositionedQuote";
 
 const TOOLS_WITH_CUSTOM_HANDLING = [
   SEARCH_TOOL_NAME,
@@ -252,6 +254,7 @@ export const AIMessage = ({
     new Set((docs || []).map((doc) => doc.source_type))
   ).slice(0, 3);
 
+  // markdown组件
   const markdownComponents = useMemo(
     () => ({
       a: MemoizedLink,
@@ -263,11 +266,16 @@ export const AIMessage = ({
           children
         );
 
+        // return (
+        //   <CodeBlock className={className} codeText={codeText}>
+        //     {children}
+        //   </CodeBlock>
+        // );
         return (
-          <CodeBlock className={className} codeText={codeText}>
-            {children}
-          </CodeBlock>
-        );
+          <CodeBlockButton>
+            <CodeBlock className={className} codeText={codeText}>{children}</CodeBlock>
+          </CodeBlockButton>
+        )
       },
     }),
     [finalContent]
@@ -275,14 +283,18 @@ export const AIMessage = ({
 
   const renderedMarkdown = useMemo(() => {
     return (
-      <ReactMarkdown
-        className="prose max-w-full text-base"
-        components={markdownComponents}
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[[rehypePrism, { ignoreMissing: true }]]}
-      >
-        {finalContent as string}
-      </ReactMarkdown>
+      <>
+        <ReactMarkdown
+          className="prose max-w-full text-base"
+          components={markdownComponents}
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[[rehypePrism, { ignoreMissing: true }]]}
+        >
+          {finalContent as string}
+        </ReactMarkdown>
+        {/*定位引用*/}
+        <PositionedQuote />
+      </>
     );
   }, [finalContent, markdownComponents]);
 

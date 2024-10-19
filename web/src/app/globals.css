@@ -340,6 +340,7 @@ body {
 pre[class*="language-"],
 code[class*="language-"] {
   color: theme("colors.code-text");
+  background-color: transparent !important; /*取消代码背景颜色*/
 }
 
 /* Token styles */
